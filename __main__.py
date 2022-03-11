@@ -1,6 +1,20 @@
 from app import down_alert
+import os
+import argparse
 
+from config import read_config
 
 if __name__ == "__main__":
-    config = {"url": "194.163.179.102", "smtp_server": "smtp"}
+    parser = argparse.ArgumentParser(
+        description="Ping an URL and send an alert mail if service is down."
+    )
+    parser.add_argument(
+        "env",
+        type=str,
+        help=".env file containing config data.",
+    )
+    args = parser.parse_args()
+
+    assert os.path.isfile(args.env), f"{args.env} is not a file."
+    config = read_config(args.env)
     down_alert(config)

@@ -1,12 +1,15 @@
 import smtplib, ssl, socket
+from datetime import datetime
 
 
-def message() -> str:
-    return f"""
-Subject: Server not reachable
+def create_message(server_url: str, **kwargs) -> str:
+    return """\
+Subject: Server ({server_url}) not reachable!
 
-This message is sent from Python.
-   """
+On {date}, the server not responded to ping.
+   """.format(
+        server_url=server_url, date=str(datetime.now().ctime())
+    )
 
 
 def mail_alert(
@@ -14,28 +17,19 @@ def mail_alert(
     password: str,
     from_mail: str,
     to_mail: str,
-    smpt_server: str,
-    smtp_port: int,
+    smtp_server: str,
+    smtp_port: str,
     socket_timeout: float = 5,
+    **kwargs,
 ):
-
     socket.setdefaulttimeout(socket_timeout)
     context = ssl.create_default_context()
-
+    message = create_message(**kwargs)
     try:
-        server = smtplib.SMTP("smtp.gmail.com", 587)
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls(context=context)
+            server.login(user, password)
+            server.sendmail(from_mail, to_mail, message)
     except BaseException as _e:
         print("Could not establish server connection. Maybe check Firewall settings.")
-        return
-
-    try:
-        server.starttls(context=context)
-        server.login(
-            "cloud.couri@gmail.com",
-            "tighten-granular-uranium-hunk-comma-married-unpaired",
-        )
-        server.sendmail("cloud.couri@gmail.com", "ofungus@gmail.com", message())
-    except BaseException as _e:
-        print(_e)
-    finally:
-        server.quit()
+        print("Reason:", _e)
