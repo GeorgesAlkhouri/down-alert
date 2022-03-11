@@ -7,6 +7,7 @@ def read_config(env_path: str) -> Dict:
     env_file.read(env_path)
     config = dict(env_file["GENERAL"])
     config["env_path"] = env_path
+    config["interval"] = env_file["GENERAL"].getint("interval")
     return config
 
 

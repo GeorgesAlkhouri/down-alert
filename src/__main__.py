@@ -1,6 +1,7 @@
 from app import down_alert
 import os
 import argparse
+import time
 
 from config import read_config
 
@@ -17,4 +18,6 @@ if __name__ == "__main__":
 
     assert os.path.isfile(args.env), f"{args.env} is not a file."
     config = read_config(args.env)
-    down_alert(config)
+    while True:
+        down_alert(config)
+        time.sleep(config["interval"])

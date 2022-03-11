@@ -1,0 +1,12 @@
+[GENERAL]
+# every 3 hours
+interval=10800
+server_url=
+smtp_server=
+smtp_port=
+from_mail=
+to_mail=
+
+[SECRETS]
+user=
+password=
