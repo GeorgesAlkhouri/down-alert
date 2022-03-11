@@ -3,6 +3,7 @@ from alert import mail_alert
 from config import read_secrets
 
 from ping import is_reachable
+from log import logger
 
 
 def down_alert(config: Dict):
@@ -11,13 +12,13 @@ def down_alert(config: Dict):
     try:
         reachable = is_reachable(url)
     except BaseException as _e:
-        print(f"Something went wrong. Could not check if {url} is reachable.")
-        print(_e)
+        logger.error(f"Something went wrong. Could not check if {url} is reachable.")
+        logger.exception(_e)
         return
 
     if not reachable:
-        print(f"{url} is down!")
+        logger.info(f"{url} is down!")
         mail_alert(*read_secrets(config["env_path"]), **config)
         return
 
-    print(f"{url} is up!")
+    logger.info(f"{url} is up!")

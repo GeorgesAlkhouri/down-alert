@@ -1,6 +1,8 @@
 import smtplib, ssl, socket
 from datetime import datetime
 
+from log import logger
+
 
 def create_message(server_url: str, **kwargs) -> str:
     return """\
@@ -28,8 +30,11 @@ def mail_alert(
     try:
         with smtplib.SMTP(smtp_server, smtp_port) as server:
             server.starttls(context=context)
+            server.ehlo()
             server.login(user, password)
             server.sendmail(from_mail, to_mail, message)
     except BaseException as _e:
-        print("Could not establish server connection. Maybe check Firewall settings.")
-        print("Reason:", _e)
+        logger.error(
+            "Could not establish server connection. Maybe check Firewall settings."
+        )
+        logger.exception(_e)
