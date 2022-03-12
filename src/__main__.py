@@ -2,7 +2,7 @@ from app import down_alert
 import os
 import argparse
 import time
-
+from log import logger
 from config import read_config
 
 if __name__ == "__main__":
@@ -19,5 +19,16 @@ if __name__ == "__main__":
     assert os.path.isfile(args.env), f"{args.env} is not a file."
     config = read_config(args.env)
     while True:
-        down_alert(config)
-        time.sleep(config["interval"])
+
+        alert_sent = down_alert(config)
+
+        if alert_sent:
+            interval = config["interval_wait_after_send"]
+            logger.info(
+                f"Alert was sent. Next check if reachable will be in {interval}s."
+            )
+        else:
+            interval = config["interval"]
+
+        logger.info("Waiting...")
+        time.sleep(interval)

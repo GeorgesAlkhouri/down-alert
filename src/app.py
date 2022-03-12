@@ -6,7 +6,12 @@ from ping import is_reachable
 from log import logger
 
 
-def down_alert(config: Dict):
+def down_alert(config: Dict) -> bool:
+    """Check if a server is reachable and alert via
+    mail if not.
+    Return bool whether an alert could be sent or
+    not.
+    """
 
     url = config["server_url"]
     try:
@@ -14,11 +19,11 @@ def down_alert(config: Dict):
     except BaseException as _e:
         logger.error(f"Something went wrong. Could not check if {url} is reachable.")
         logger.exception(_e)
-        return
+        return False
 
     if not reachable:
         logger.info(f"{url} is down!")
-        mail_alert(*read_secrets(config["env_path"]), **config)
-        return
+        return mail_alert(*read_secrets(config["env_path"]), **config)
 
     logger.info(f"{url} is up!")
+    return False

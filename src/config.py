@@ -8,6 +8,9 @@ def read_config(env_path: str) -> Dict:
     config = dict(env_file["GENERAL"])
     config["env_path"] = env_path
     config["interval"] = env_file["GENERAL"].getint("interval")
+    config["interval_wait_after_send"] = env_file["GENERAL"].getint(
+        "interval_wait_after_send"
+    )
     return config
 
 

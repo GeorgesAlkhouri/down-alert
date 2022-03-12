@@ -1,6 +1,9 @@
 [GENERAL]
-# every 3 hours
-interval=10800
+# every 5 minutes
+interval=300
+# wait 3 hours
+# after an alert could be sent successfully
+interval_wait_after_send=10800
 server_url=
 smtp_server=
 smtp_port=

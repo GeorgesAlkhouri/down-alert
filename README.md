@@ -21,8 +21,11 @@ docker compose up -d
 
 ```ini
 [GENERAL]
-# every 3 hours
-interval=10800
+# every 5 minutes
+interval=300
+# wait 3 hours
+# after an alert could be sent successfully
+interval_wait_after_send=10800
 server_url= the server or the service you try to reach
 smtp_server=
 smtp_port=
@@ -32,4 +35,20 @@ to_mail= receiver mail
 [SECRETS]
 user=
 password=
+```
+
+## Docker Compose
+
+```yaml
+services:
+  down-alert:
+    image: python:3.10-alpine
+    container_name: down-alert
+    restart: always
+    environment:
+      - TZ=Europe/Berlin
+    volumes:
+      - ./src/:/app/:ro
+      - ./config.ini:/config.ini:ro
+    command: ["python", "/app/__main__.py", "/config.ini"]
 ```

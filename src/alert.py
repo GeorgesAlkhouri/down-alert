@@ -23,7 +23,7 @@ def mail_alert(
     smtp_port: str,
     socket_timeout: float = 5,
     **kwargs,
-):
+) -> bool:
     socket.setdefaulttimeout(socket_timeout)
     context = ssl.create_default_context()
     message = create_message(**kwargs)
@@ -32,9 +32,13 @@ def mail_alert(
             server.starttls(context=context)
             server.ehlo()
             server.login(user, password)
-            server.sendmail(from_mail, to_mail, message)
+            errors = server.sendmail(from_mail, to_mail, message)
     except BaseException as _e:
         logger.error(
             "Could not establish server connection. Maybe check Firewall settings."
         )
         logger.exception(_e)
+        return False
+
+    # True if mail could be sent to receiver
+    return not errors
