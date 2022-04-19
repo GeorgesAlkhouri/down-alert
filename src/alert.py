@@ -37,8 +37,7 @@ def mail_alert(
         logger.error(
             "Could not establish server connection. Maybe check Firewall settings."
         )
-        logger.exception(_e)
-        return False
+        raise _e
 
     # True if mail could be sent to receiver
     return not errors

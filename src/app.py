@@ -25,5 +25,5 @@ def down_alert(config: Dict) -> bool:
         logger.info(f"{url} is down!")
         return mail_alert(*read_secrets(config["env_path"]), **config)
 
-    logger.info(f"{url} is up!")
+    logger.debug(f"{url} is up!")
     return False

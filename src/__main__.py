@@ -18,6 +18,7 @@ if __name__ == "__main__":
 
     assert os.path.isfile(args.env), f"{args.env} is not a file."
     config = read_config(args.env)
+    logger.info(f'Start pinging url {config["server_url"]}')
     while True:
 
         alert_sent = down_alert(config)
@@ -30,5 +31,5 @@ if __name__ == "__main__":
         else:
             interval = config["interval"]
 
-        logger.info("Waiting...")
+        logger.debug("Waiting...")
         time.sleep(interval)

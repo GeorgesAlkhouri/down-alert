@@ -13,14 +13,16 @@ def is_reachable(url: str, timeout: float = 5, retries: int = 5) -> bool:
   for _try in range(retries):
     try:
       subprocess.check_call(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE, timeout=timeout)
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError as _e:
       if _try < retries:
         logger.info(f"Could not reach {url}. {retries - (_try + 1)} more tries.")
+        logger.error(_e)
         time.sleep(timeout)
         continue
       return False
-    except subprocess.TimeoutExpired:
+    except subprocess.TimeoutExpired as _e:
       logger.info(f"Could not reach {url}. {retries - (_try + 1)} more tries.")
+      logger.error(_e)
       if _try < retries:
         time.sleep(timeout)
         continue
