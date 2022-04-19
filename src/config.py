@@ -1,6 +1,16 @@
+import os
 from configparser import ConfigParser
 from typing import Dict, Tuple
 
+
+def supersede(config: Dict, prefix: str = "DOWN_ALERT") -> Dict:
+    for key in config.keys():
+        value = os.getenv(prefix + "_" + key.upper())
+        if value:
+            config[key] = value
+
+    return config
+    
 
 def read_config(env_path: str) -> Dict:
     env_file = ConfigParser()
@@ -11,7 +21,7 @@ def read_config(env_path: str) -> Dict:
     config["interval_wait_after_send"] = env_file["GENERAL"].getint(
         "interval_wait_after_send"
     )
-    return config
+    return supersede(config)
 
 
 def read_secrets(env_path: str) -> Tuple[str, str]:
