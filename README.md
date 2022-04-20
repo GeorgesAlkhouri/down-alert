@@ -3,15 +3,15 @@ Small Python application. Pings a service URL and sends a TLS encrypted mail if 
 
 ## Usage
 
-Clone the repository to your machine and create the config.ini file.
+Clone the repository to your machine and copy the docker-compose.yml.example file.
 
 
 ```bash
 git clone git@github.com:GeorgesAlkhouri/down-alert.git
 
 cd down-alert
-cp config.example.ini config.ini
-# adjust config.ini file
+cp docker-compose.yml.example docker-compose.yml
+# adjust docker-compose.yml file to your needs
 # and deploy the service in the background with Docker.
 docker compose up -d
 ```
@@ -19,36 +19,63 @@ docker compose up -d
 
 ## Config
 
-```ini
-[GENERAL]
-# every 5 minutes
-interval=300
+Configure the app by setting the following env variables with docker compose.
+
+```
+# check every 5 minutes
+DOWN_ALERT_INTERVAL: 300
 # wait 3 hours
 # after an alert could be sent successfully
-interval_wait_after_send=10800
-server_url= the server or the service you try to reach
-smtp_server=
-smtp_port=
-from_mail= sender mail
-to_mail= receiver mail
-
-[SECRETS]
-user=
-password=
+DOWN_ALERT_SMTP_SERVER: ...
+DOWN_ALERT_SMTP_PORT: ...
+DOWN_ALERT_FROM_MAIL: ...
+DOWN_ALERT_TO_MAIL: ...
+DOWN_ALERT_USER: ...
+DOWN_ALERT_PASSWORD: ...
 ```
 
-## Docker Compose
+## Docker Compose Example
 
 ```yaml
-services:
-  down-alert:
-    image: python:3.10-alpine
-    container_name: down-alert
-    restart: always
-    environment:
-      - TZ=Europe/Berlin
-    volumes:
+x-down-alert-common:
+  &down-alert-common
+  image: python:3.10-alpine
+  environment:
+    &down-alert-common-env
+    TZ: Europe/Berlin
+    # check every 5 minutes
+    DOWN_ALERT_INTERVAL: 300
+    # wait 3 hours
+    # after an alert could be sent successfully
+    DOWN_ALERT_INTERVAL_WAIT_AFTER_SEND: 10800
+    DOWN_ALERT_SMTP_SERVER: ...
+    DOWN_ALERT_SMTP_PORT: ...
+    DOWN_ALERT_FROM_MAIL: ...
+    DOWN_ALERT_TO_MAIL: ...
+    DOWN_ALERT_USER: ...
+    DOWN_ALERT_PASSWORD: ...
+  volumes:
       - ./src/:/app/:ro
-      - ./config.ini:/config.ini:ro
-    command: ["python", "/app/__main__.py", "/config.ini"]
+  command: ["python", "/app/__main__.py"]
+  healthcheck:
+    test: ["CMD", "pgrep", "-x", "python"]
+    interval: 30s
+    retries: 0
+
+services:
+
+  sample-1-service:
+    <<: *down-alert-common
+    environment:
+      <<: *down-alert-common-env
+      DOWN_ALERT_LOG_LEVEL: DEBUG
+      DOWN_ALERT_SERVER_URL: sample-1.service.de
+
+  sample-2-service:
+    <<: *down-alert-common
+    environment:
+      <<: *down-alert-common-env
+      TZ: Europe/London
+      DOWN_ALERT_INTERVAL: 3600
+      DOWN_ALERT_SERVER_URL: sample-2.service.com
 ```

@@ -5,14 +5,17 @@ x-down-alert-common:
   environment:
     &down-alert-common-env
     TZ: Europe/Berlin
+    # check every 5 minutes
     DOWN_ALERT_INTERVAL: 300
+    # wait 3 hours
+    # after an alert could be sent successfully
     DOWN_ALERT_INTERVAL_WAIT_AFTER_SEND: 10800
     DOWN_ALERT_SMTP_SERVER: ...
     DOWN_ALERT_SMTP_PORT: ...
     DOWN_ALERT_FROM_MAIL: ...
     DOWN_ALERT_TO_MAIL: ...
-    DOWN_ALERT_USER: ${DOWN_ALERT_USER:?}
-    DOWN_ALERT_PASSWORD: ${DOWN_ALERT_PASSWORD:?}
+    DOWN_ALERT_USER: ...
+    DOWN_ALERT_PASSWORD: ...
   volumes:
       - ./src/:/app/:ro
   command: ["python", "/app/__main__.py"]
