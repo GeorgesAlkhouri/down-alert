@@ -1,4 +1,6 @@
-import smtplib, ssl, socket
+import smtplib
+import socket
+import ssl
 from datetime import datetime
 
 from log import logger
@@ -20,7 +22,7 @@ def mail_alert(
     from_mail: str,
     to_mail: str,
     smtp_server: str,
-    smtp_port: str,
+    smtp_port: int,
     socket_timeout: float = 5,
     **kwargs,
 ) -> bool:

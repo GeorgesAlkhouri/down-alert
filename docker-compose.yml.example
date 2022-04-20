@@ -1,0 +1,39 @@
+
+x-down-alert-common:
+  &down-alert-common
+  image: python:3.10-alpine
+  environment:
+    &down-alert-common-env
+    TZ: Europe/Berlin
+    DOWN_ALERT_INTERVAL: 300
+    DOWN_ALERT_INTERVAL_WAIT_AFTER_SEND: 10800
+    DOWN_ALERT_SMTP_SERVER: ...
+    DOWN_ALERT_SMTP_PORT: ...
+    DOWN_ALERT_FROM_MAIL: ...
+    DOWN_ALERT_TO_MAIL: ...
+    DOWN_ALERT_USER: ${DOWN_ALERT_USER:?}
+    DOWN_ALERT_PASSWORD: ${DOWN_ALERT_PASSWORD:?}
+  volumes:
+      - ./src/:/app/:ro
+  command: ["python", "/app/__main__.py"]
+  healthcheck:
+    test: ["CMD", "pgrep", "-x", "python"]
+    interval: 30s
+    retries: 0
+
+services:
+
+  sample-1-service:
+    <<: *down-alert-common
+    environment:
+      <<: *down-alert-common-env
+      DOWN_ALERT_LOG_LEVEL: DEBUG
+      DOWN_ALERT_SERVER_URL: sample-1.service.de
+
+  sample-2-service:
+    <<: *down-alert-common
+    environment:
+      <<: *down-alert-common-env
+      TZ: Europe/London
+      DOWN_ALERT_INTERVAL: 3600
+      DOWN_ALERT_SERVER_URL: sample-2.service.com

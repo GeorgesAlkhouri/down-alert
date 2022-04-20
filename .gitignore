@@ -1,6 +1,8 @@
 # Project related
 
-config.ini
+docker-compose.yaml
+docker-compose.yml
+.env
 
 
 # Byte-compiled / optimized / DLL files

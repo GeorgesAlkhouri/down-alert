@@ -1,35 +1,28 @@
-from app import down_alert
 import os
-import argparse
 import time
+
+from app import down_alert
+from config import create_config
 from log import logger
-from config import read_config
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Ping an URL and send an alert mail if service is down."
-    )
-    parser.add_argument(
-        "env",
-        type=str,
-        help=".env file containing config data.",
-    )
-    args = parser.parse_args()
 
-    assert os.path.isfile(args.env), f"{args.env} is not a file."
-    config = read_config(args.env)
-    logger.info(f'Start pinging url {config["server_url"]}')
+    log_level = os.environ.get("DOWN_ALERT_LOG_LEVEL", "INFO").upper()
+    logger.setLevel(log_level)
+
+    config = create_config()
+    logger.info(f"Start pinging url {config.server_url}")
     while True:
 
         alert_sent = down_alert(config)
 
         if alert_sent:
-            interval = config["interval_wait_after_send"]
+            interval = config.interval_wait_after_send
             logger.info(
                 f"Alert was sent. Next check if reachable will be in {interval}s."
             )
         else:
-            interval = config["interval"]
+            interval = config.interval
 
         logger.debug("Waiting...")
         time.sleep(interval)

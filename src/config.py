@@ -1,30 +1,24 @@
 import os
-from configparser import ConfigParser
-from typing import Dict, Tuple
+from dataclasses import dataclass
 
 
-def supersede(config: Dict, prefix: str = "DOWN_ALERT") -> Dict:
-    for key in config.keys():
-        value = os.getenv(prefix + "_" + key.upper())
+@dataclass
+class Config:
+    server_url: str
+    smtp_server: str
+    smtp_port: int
+    from_mail: str
+    to_mail: str
+    user: str
+    password: str
+    interval: int = 300
+    interval_wait_after_send: int = 10_800
+
+
+def create_config(prefix="DOWN_ALERT") -> Config:
+    config_dict = {}
+    for key, _type in Config.__annotations__.items():
+        value = os.getenv(f"{prefix}_{key.upper()}")
         if value:
-            config[key] = value
-
-    return config
-    
-
-def read_config(env_path: str) -> Dict:
-    env_file = ConfigParser()
-    env_file.read(env_path)
-    config = dict(env_file["GENERAL"])
-    config["env_path"] = env_path
-    config["interval"] = env_file["GENERAL"].getint("interval")
-    config["interval_wait_after_send"] = env_file["GENERAL"].getint(
-        "interval_wait_after_send"
-    )
-    return supersede(config)
-
-
-def read_secrets(env_path: str) -> Tuple[str, str]:
-    env_file = ConfigParser()
-    env_file.read(env_path)
-    return env_file["SECRETS"]["user"], env_file["SECRETS"]["password"]
+            config_dict[key] = _type(value)
+    return Config(**config_dict)
