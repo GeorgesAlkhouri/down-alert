@@ -1,6 +1,6 @@
 # Down Alert
 Small Docker application. Tests if a service URL is reachable and sends a TLS encrypted mail if the service does not respond.
-Uses ping for test, but also wget is possible to use.
+Uses ping or wget for testing.
 
 ## Usage
 
