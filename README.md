@@ -1,5 +1,6 @@
 # Down Alert
-Small Docker application. Pings a service URL and sends a TLS encrypted mail if the service does not respond.
+Small Docker application. Tests if a service URL is reachable and sends a TLS encrypted mail if the service does not respond.
+Uses ping for test, but also wget is possible to use.
 
 ## Usage
 
@@ -27,6 +28,8 @@ DOWN_ALERT_INTERVAL: 300
 # wait 3 hours
 # after an alert could be sent successfully
 DOWN_ALERT_INTERVAL_WAIT_AFTER_SEND: 10800
+# use wget instead of ping to test reachability
+DOWN_ALERT_USE_WGET: "True"
 DOWN_ALERT_SMTP_SERVER: smtp.gmail.com
 DOWN_ALERT_SMTP_PORT: 587
 # Sender mail
@@ -46,11 +49,18 @@ x-down-alert-common:
   environment:
     &down-alert-common-env
     TZ: Europe/Berlin
+    # check every 5 minutes
     DOWN_ALERT_INTERVAL: 300
+    # wait 3 hours
+    # after an alert could be sent successfully
     DOWN_ALERT_INTERVAL_WAIT_AFTER_SEND: 10800
-    DOWN_ALERT_SMTP_SERVER: ...
-    DOWN_ALERT_SMTP_PORT: ...
+    # use wget instead of ping to test reachability
+    DOWN_ALERT_USE_WGET: "True"
+    DOWN_ALERT_SMTP_SERVER: smtp.gmail.com
+    DOWN_ALERT_SMTP_PORT: 587
+    # Sender mail
     DOWN_ALERT_FROM_MAIL: ...
+    # Receiver mail
     DOWN_ALERT_TO_MAIL: ...
     DOWN_ALERT_USER: ...
     DOWN_ALERT_PASSWORD: ...
@@ -68,6 +78,7 @@ services:
     <<: *down-alert-common
     environment:
       <<: *down-alert-common-env
+      DOWN_ALERT_USE_WGET: "False"
       DOWN_ALERT_LOG_LEVEL: DEBUG
       DOWN_ALERT_SERVER_URL: sample-1.service.de
 

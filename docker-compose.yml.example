@@ -10,6 +10,8 @@ x-down-alert-common:
     # wait 3 hours
     # after an alert could be sent successfully
     DOWN_ALERT_INTERVAL_WAIT_AFTER_SEND: 10800
+    # use wget instead of ping to test reachability
+    DOWN_ALERT_USE_WGET: "True"
     DOWN_ALERT_SMTP_SERVER: smtp.gmail.com
     DOWN_ALERT_SMTP_PORT: 587
     # Sender mail
@@ -32,6 +34,7 @@ services:
     <<: *down-alert-common
     environment:
       <<: *down-alert-common-env
+      DOWN_ALERT_USE_WGET: "False"
       DOWN_ALERT_LOG_LEVEL: DEBUG
       DOWN_ALERT_SERVER_URL: sample-1.service.de
 
