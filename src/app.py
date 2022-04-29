@@ -14,8 +14,12 @@ def down_alert(config: Config) -> bool:
     """
 
     url = config.server_url
+    cmd = "ping -c 1"
+    if config.use_wget:
+        cmd = "wget --spider"
+
     try:
-        reachable = is_reachable(url)
+        reachable = is_reachable(url, cmd=cmd)
     except BaseException as _e:
         logger.error(f"Something went wrong. Could not check if {url} is reachable.")
         logger.exception(_e)

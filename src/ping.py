@@ -5,13 +5,13 @@ import time
 from log import logger
 
 
-def is_reachable(url: str, timeout: float = 5, retries: int = 5) -> bool:
+def is_reachable(url: str, cmd: str, timeout: float = 5, retries: int = 5) -> bool:
 
     assert retries > 0, "Retries has to be > 0."
 
-    command_line = f"ping -c 1 {url}"
+    command_line = f"{cmd} {url}"
     args = shlex.split(command_line)
-
+    logger.debug(f"Execute {args}")
     for _try in range(1, retries + 1):
         try:
             subprocess.check_call(
